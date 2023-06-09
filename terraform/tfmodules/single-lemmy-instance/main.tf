@@ -154,6 +154,7 @@ resource "time_sleep" "wait_lemmy" {
   triggers = {
     changed_time_stamp = length(data.oci_computeinstanceagent_instance_agent_plugins.lemmy.instance_agent_plugins) > 0 ? timestamp() : null
     instance_ocid  = oci_core_instance.lemmy.id
+  }
 }
 
 resource "oci_bastion_bastion" "lemmy" {

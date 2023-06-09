@@ -81,5 +81,24 @@ output "generated_ssh_private_key" {
   sensitive = true
 }
 
+output "lemmy_public_ip" {
+  value = module.single-lemmy-instance.public_ip
+}
+
+output "lemmy_private_ip" {
+  value = module.single-lemmy-instance.private_ip
+}
+
+output "bastion_session_lemmy_public_key_host_info" {
+  value = module.single-lemmy-instance.oci_bastion_session_lemmy_public_key_host_info
+}
+
+output "bastion_session_lemmy_user_name" {
+  value = module.single-lemmy-instance.oci_bastion_session_lemmy_user_name
+}
+
+output "bastion_session_lemmy_ssh_metadata" {
+  value = module.single-lemmy-instance.oci_bastion_session_lemmy_ssh_metadata
+}
 
  
