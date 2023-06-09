@@ -46,5 +46,18 @@ variable "whitelisted_ip" {
     type = string
     default = ""
 }
-  
-  
+
+variable "ssh_public_key_file" {
+    type = string
+    default = ""
+}
+
+variable "boot_volume_backup_policy_level" {
+    type = string
+    default = "GOLD"
+}
+
+variable "block_volume_backup_policy_level" {
+    type = string
+    default = "GOLD"
+}

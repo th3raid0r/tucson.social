@@ -27,12 +27,12 @@ services:
       - lemmy-ui
 
   lemmy:
-    # image: dessalines/lemmy:dev
+    image: dessalines/lemmy:latest
     # use this to build your local lemmy server image for development
     # run docker compose up --build
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile
+    #build:
+    #  context: ../
+    #  dockerfile: docker/Dockerfile
       # args:
       #   RUST_RELEASE_MODE: release
     # this hostname is used in nginx reverse proxy and also for lemmy ui to connect to the backend, do not change
@@ -41,7 +41,7 @@ services:
       - lemmyinternal
     restart: always
     environment:
-      - RUST_LOG="warn,lemmy_server=debug,lemmy_api=debug,lemmy_api_common=debug,lemmy_api_crud=debug,lemmy_apub=debug,lemmy_db_schema=debug,lemmy_db_views=debug,lemmy_db_views_actor=debug,lemmy_db_views_moderator=debug,lemmy_routes=debug,lemmy_utils=debug,lemmy_websocket=debug"
+      - RUST_LOG="warn,lemmy_server=warn,lemmy_api=warn,lemmy_api_common=warn,lemmy_api_crud=warn,lemmy_apub=warn,lemmy_db_schema=warn,lemmy_db_views=warn,lemmy_db_views_actor=warn,lemmy_db_views_moderator=warn,lemmy_routes=warn,lemmy_utils=warn,lemmy_websocket=warn"
       - RUST_BACKTRACE=full
     volumes:
       - ./lemmy.hjson:/config/config.hjson:Z
@@ -81,7 +81,7 @@ services:
     environment:
       - PICTRS_OPENTELEMETRY_URL=http://otel:4137
       - PICTRS__API_KEY=API_KEY
-      - RUST_LOG=debug
+      - RUST_LOG=warn
       - RUST_BACKTRACE=full
       - PICTRS__MEDIA__VIDEO_CODEC=vp9
       - PICTRS__MEDIA__GIF__MAX_WIDTH=256

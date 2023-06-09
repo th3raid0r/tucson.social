@@ -22,11 +22,18 @@ output "private_security_list_id" {
   value = oci_core_security_list.tucsocial_private_security_list.id
 }
 
-output "public_security_list_security_rule_id" {
-  value = oci_core_security_list_security_rule.tucsocial_public_security_list_security_rule.id
+output "public_security_list_security_rule_web_id" {
+  value = oci_core_security_list_security_rule.tucsocial_public_security_list_security_rule_web.id
 }
 
-output "private_security_list_security_rule_id" {
-  value = oci_core_security_list_security_rule.tucsocial_private_security_list_security_rule.id
+output "public_security_list_security_rule_web_secure_id" {
+  value = oci_core_security_list_security_rule.tucsocial_public_security_list_security_rule_web_secure.id
 }
 
+output "private_security_list_security_rule_ssh_id" {
+  value = oci_core_security_list_security_rule.tucsocial_private_security_list_security_rule_ssh.id
+}
+
+output "private_security_list_security_rule_lemmy_id" {
+  value = oci_core_security_list_security_rule.tucsocial_private_security_list_security_rule_lemmy.id
+}
