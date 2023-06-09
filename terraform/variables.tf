@@ -1,0 +1,19 @@
+variable "tenancy_ocid" {
+  type = string
+}
+
+variable "user_ocid" {
+  type = string
+}
+
+variable "fingerprint" {
+  type = string
+}
+
+variable "private_key_path" {
+  type = string
+}
+
+variable "root_compartment_id" {
+  type = string
+}
