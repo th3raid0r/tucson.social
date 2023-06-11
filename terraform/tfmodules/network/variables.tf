@@ -57,3 +57,8 @@ variable "root_compartment_ocid" {
   type        = string
   description = "The OCID of the root compartment"
 }
+
+variable "region" {
+  type        = string
+  description = "The region to deploy to"
+}

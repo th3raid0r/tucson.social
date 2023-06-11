@@ -1,4 +1,24 @@
+variable "tenancy_ocid" {
+  type = string
+}
+
+variable "user_ocid" {
+  type = string
+}
+
+variable "fingerprint" {
+  type = string
+}
+
+variable "private_key_path" {
+  type = string
+}
+
 variable "compartment_ocid" {
+  type = string
+}
+
+variable "region" {
   type = string
 }
 
@@ -26,9 +46,9 @@ variable "instance_flex_shape_memory_in_gbs" {
   type = number
 }
 
-variable "vcn_id" {
-  type = string
-}
+# variable "vcn_id" {
+#   type = string
+# }
 
 variable "private_subnet_id" {
   type = string

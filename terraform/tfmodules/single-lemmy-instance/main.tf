@@ -1,8 +1,12 @@
 terraform {
   required_version = ">= 1.4" 
   required_providers {
+    time = {
+      source = "hashicorp/time"
+      version = "0.7.0"
+    }
     oci = {
-      source = "oracle-terraform-modules/oci"
+      source  = "oracle/oci"
       version = ">= 5.0.0"
     }
   }
@@ -80,7 +84,7 @@ resource "oci_core_instance" "lemmy" {
   }
   source_details {
     source_type = "image"
-    source_id = data.oci_core_images.ol_latest.images.0.id
+    source_id = data.oci_core_images.ol_latest.images[0].id
   }
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
@@ -161,7 +165,7 @@ resource "oci_bastion_bastion" "lemmy" {
   bastion_type                 = "STANDARD"
   compartment_id               = var.compartment_ocid
   target_subnet_id             = var.private_subnet_id
-  client_cidr_block_allow_list = ["${var.whitelisted_ips}/32"]
+  client_cidr_block_allow_list = ["${var.whitelisted_ip}/32"]
   max_session_ttl_in_seconds   = 10800
   name                        = "${var.display_name}-lemmy-bastion"
   freeform_tags = var.tags
