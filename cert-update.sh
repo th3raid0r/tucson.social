@@ -1,0 +1,1 @@
+sudo docker run -it --rm --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" certbot/dns-cloudflare --dns-cloudflare --dns-cloudflare-credentials /opt/cloudflare/credentials --agree-tos -d test.example.com --server https://acme-v02.api.letsencrypt.org/directory --dry-ru

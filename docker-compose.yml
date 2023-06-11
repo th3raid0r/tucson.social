@@ -16,13 +16,12 @@ services:
       - lemmyexternalproxy
     ports:
       # only ports facing any connection from outside
-      - 80:80 
+      - 80:80
       - 443:443
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      # setup your certbot and letsencrypt config 
-      - ./certbot:/var/www/certbot
-      - ./letsencrypt:/etc/letsencrypt/live
+      # setup your certbot and letsencrypt config
+      - ../certbot/letsencrypt:/etc/letsencrypt
     restart: always
     depends_on:
       - pictrs
@@ -39,7 +38,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./lemmy.hjson:/config/config.hjson
+      - ./lemmy.hjson:/config/config.hjson:Z
     depends_on:
       - postgres
       - pictrs
@@ -68,11 +67,11 @@ services:
     # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
     networks:
       - lemmyinternal
-    environment:
-      - PICTRS__API_KEY=API_KEY
+    env_file:
+      - .env
     user: 991:991
     volumes:
-      - ./volumes/pictrs:/mnt
+      - /mnt/pictrs:/mnt
     restart: always
 
   postgres:
@@ -81,11 +80,14 @@ services:
     hostname: postgres
     networks:
       - lemmyinternal
+        #- lemmyexternalproxy
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_DB=lemmy
     env_file:
       - .env
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data
+      - /mnt/db:/var/lib/postgresql/data
     restart: always

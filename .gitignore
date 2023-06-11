@@ -39,4 +39,7 @@ terraform.rc
 
 # Introducing .example files! These are files of miscellaneous historical and documentation text just for copilot. They are not used by the application.
 *.example
+
+
+credentials.ini
 ```
