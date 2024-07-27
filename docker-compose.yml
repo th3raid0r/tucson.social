@@ -1,37 +1,34 @@
-version: "3.3"
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "4"
 
-networks:
-  # communication to web and clients
-  lemmyexternalproxy:
-  # communication between lemmy services
-  lemmyinternal:
-    driver: bridge
-    internal: true
 
 services:
   proxy:
     image: nginx:1-alpine
-    networks:
-      - lemmyinternal
-      - lemmyexternalproxy
     ports:
       # only ports facing any connection from outside
-      - 80:80
+      - 80:80 
       - 443:443
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      # setup your certbot and letsencrypt config
+      # setup your certbot and letsencrypt config 
       - ../certbot/letsencrypt:/etc/letsencrypt
     restart: always
     depends_on:
-      - pictrs
-      - lemmy-ui
+      lemmy:
+        condition: service_started
+      lemmy-ui:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    logging: *default-logging
 
   lemmy:
-    image: dessalines/lemmy:0.17.3
+    image: dessalines/lemmy:0.19.5
     hostname: lemmy
-    networks:
-      - lemmyinternal
     restart: always
     environment:
       - RUST_LOG="warn,lemmy_server=info,lemmy_api=info,lemmy_api_common=info,lemmy_api_crud=info,lemmy_apub=info,lemmy_db_schema=info,lemmy_db_views=info,lemmy_db_views_actor=info,lemmy_db_views_moderator=info,lemmy_routes=info,lemmy_utils=info,lemmy_websocket=info"
@@ -40,47 +37,62 @@ services:
     volumes:
       - ./lemmy.hjson:/config/config.hjson:Z
     depends_on:
-      - postgres
-      - pictrs
+      postgres:
+        condition: service_healthy
+      pictrs:
+        condition: service_started
+    logging: *default-logging
 
   lemmy-ui:
-    image: dessalines/lemmy-ui:0.17.3
-    networks:
-      - lemmyinternal
+    image: dessalines/lemmy-ui:0.19.5
     environment:
       # this needs to match the hostname defined in the lemmy service
       - LEMMY_UI_LEMMY_INTERNAL_HOST=lemmy:8536
       # set the outside hostname here
-      - LEMMY_UI_LEMMY_EXTERNAL_HOST=localhost:1236
-      - LEMMY_HTTPS=true
+      - LEMMY_UI_LEMMY_EXTERNAL_HOST=tucson.social
+      - LEMMY_UI_HTTPS=true
     env_file:
       - .env
     depends_on:
-      - lemmy
+      lemmy:
+        condition: service_started
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-ILfSs", "http://localhost:1234/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    logging: *default-logging
+    init: true
 
   pictrs:
-    image: asonix/pictrs:0.3.1
+    image: asonix/pictrs:0.5.14
     # this needs to match the pictrs url in lemmy.hjson
     hostname: pictrs
     # we can set options to pictrs like this, here we set max. image size and forced format for conversion
     # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
-    networks:
-      - lemmyinternal
+    environment:
+      - PICTRS__STORE__TYPE=object_storage
+      - PICTRS__STORE__USE_PATH_STYLE=true
     env_file:
       - .env
     user: 991:991
     volumes:
-      - /mnt/pictrs:/mnt
+      - ./pictrs:/mnt
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/image/original/64d5d77c-df85-45ed-be7c-c411862a5261.png"]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 2m
+    logging: *default-logging
 
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     # this needs to match the database host in lemmy.hson
     hostname: postgres
-    networks:
-      - lemmyinternal
-        #- lemmyexternalproxy
     ports:
       - 5432:5432
     environment:
@@ -89,5 +101,12 @@ services:
     env_file:
       - .env
     volumes:
-      - /mnt/db:/var/lib/postgresql/data
+      - /mnt/db/16:/var/lib/postgresql/data
     restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
